@@ -1,0 +1,95 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Sample service
+  description: Example o Flask-RESTful service
+servers:
+  - url: 'http://service'
+    description: Sample service
+paths:
+  /status:
+    get:
+      summary: Gets service status
+      description: Returns if service is UP
+      responses:
+        200:
+          description: Service is operational
+        503:
+          description: Service is unable to handle the request
+  /swagger:
+    get:
+      summary: Returns API specification
+      description: Retrieve swagger specification for this service
+      responses:
+        200:
+          description: Swagger specification
+          content:
+            application/json:
+              schema:
+                type: object
+  /users:
+    get:
+      summary: Lists users
+      description: Lists all users in the system
+      parameters:
+        - $ref: '#/components/parameters/FilterUserLastName'
+      responses:
+        200:
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
+
+components:
+  parameters:
+    FilterUserLastName:
+      name: lastName
+      in: query
+      required: False
+      description: User last name to filter by
+      schema:
+        type: string
+  schemas:
+    User:
+      type: object
+      required:
+        - id
+        - userName
+        - email
+        - firstName
+        - lastName
+      properties:
+        id:
+          type: string
+          description: User id
+          format: uuid
+        userName:
+          type: string
+          description: User name
+          pattern: '^(?!-)[A-Za-z0-9-_]{1,25}(?<!-)$'
+          example: john_doe
+        email:
+          type: string
+          description: Email address
+          format: email
+          example: john.doe@example.com
+        firstName:
+          type: string
+          description: User first name
+          example: John
+        lastName:
+          type: string
+          description: User last name
+          example: Doe
+        address:
+          type: string
+          description: User address
+          example: Fake Street 99
+        postalCode:
+          type: string
+          description: Address postal code
+          example: 99-999

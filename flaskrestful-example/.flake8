@@ -4,7 +4,7 @@ statistics = True
 select = E,F,W,C,I,B,S,T,Q
 
 import-order-style=appnexus
-application-package-names=aws_service
+application-package-names=service
 
 format = pylint
 hang-closing = false
