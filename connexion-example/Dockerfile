@@ -38,7 +38,7 @@ FROM cleanup as production
 WORKDIR /app
 ENV PYTHONPATH=/app
 
-RUN apd add --no-cache \
+RUN apk add --no-cache \
     tini=0.18.0-r0 \
     py3-psycopg2=2.7.5-r0
 

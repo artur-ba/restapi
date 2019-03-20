@@ -1,29 +1,34 @@
-from flask_restful import fields
-from flask_restful import inputs
-from flask_restful import reqparse
+import flask_restplus
 import sqlalchemy
 
 from service.models import base
 
-USER_FIELDS = {
-    'id': fields.String(attribute='id'),
-    'userName': fields.String(attribute='user_name'),
-    'email': fields.String(attribute='email'),
-    'firstName': fields.String(attribute='first_name'),
-    'lastName': fields.String(attribute='last_name'),
-    'address': fields.String(attribute='address'),
-    'postalCode': fields.String(attribute='postal_code'),
-}
+USER_FILEDS = flask_restplus.Model(
+    'User',
+    {
+        'id': flask_restplus.fields.String(attribute='id', required=True, description='User id'),
+        'userName': flask_restplus.fields.String(attribute='user_name', required=True, description='User name'),
+        'email': flask_restplus.fields.String(attribute='email', required=True, description='User email'),
+        'firstName': flask_restplus.fields.String(
+            attribute='first_name',
+            required=True,
+            description='User first name',
+        ),
+        'lastName': flask_restplus.fields.String(attribute='last_name', required=True, description='User last name'),
+        'address': flask_restplus.fields.String(attribute='address', requied=False, description='User address'),
+        'postalCode': flask_restplus.fields.String(attribute='postal_code', required=False, description='Postal code'),
+    },
+)
 
-USER_FILTER = reqparse.RequestParser()
+USER_FILTER = flask_restplus.reqparse.RequestParser()
 USER_FILTER.add_argument('lastName', required=False, type=str, location='args')
 
-USER_CREATE_PARSER = reqparse.RequestParser()
+USER_CREATE_PARSER = flask_restplus.reqparse.RequestParser()
 USER_CREATE_PARSER.add_argument(
     'userName',
     dest='user_name',
     required=True,
-    type=inputs.regex('^(?!-)[A-Za-z0-9-_]{1,25}(?<!-)$'),
+    type=flask_restplus.inputs.regex('^(?!-)[A-Za-z0-9-_]{1,25}(?<!-)$'),
     help='User name is required',
 )
 USER_CREATE_PARSER.add_argument(
@@ -44,7 +49,7 @@ USER_CREATE_PARSER.add_argument(
     'email',
     dest='email',
     required=True,
-    type=inputs.regex(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)'),
+    type=flask_restplus.inputs.regex(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)'),
     help='User email is required',
 )
 USER_CREATE_PARSER.add_argument('address', required=False, type=str)
@@ -52,7 +57,7 @@ USER_CREATE_PARSER.add_argument(
     'postalCode',
     dest='postal_code',
     required=False,
-    type=inputs.regex(r'^[\d]{2}-[\d]{3}$'),
+    type=flask_restplus.inputs.regex(r'^[\d]{2}-[\d]{3}$'),
 )
 
 

@@ -25,7 +25,7 @@ COPY . ./
 RUN pip install -r ./test-requirements.txt
 
 RUN yapf --recursive --diff ./service
-RUN mypy --config-file ./mypy.ini ./service
+#RUN mypy --config-file ./mypy.ini ./service
 RUN flake8 --jobs 1 --config ./.flake8 ./service
 
 FROM base as cleanup
@@ -38,7 +38,7 @@ FROM cleanup as production
 WORKDIR /app
 ENV PYTHONPATH=/app
 
-RUN apd add --no-cache \
+RUN apk add --no-cache \
     tini=0.18.0-r0 \
     py3-psycopg2=2.7.5-r0
 
