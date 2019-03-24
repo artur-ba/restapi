@@ -17,9 +17,11 @@ USER_MODEL = api.model(user.USER_FILEDS.name, user.USER_FILEDS)
 
 @api.route('')
 class Users(flask_restplus.Resource):
-    @api.doc(description='Gets users')
+    @api.doc(
+        description='Gets users',
+    )
     @api.param('lastName', description='User last name to filter by', _in='query')
-    @api.marshal_with(USER_MODEL)
+    @api.marshal_with(USER_MODEL, code=200)
     def get(self) -> typing.Tuple[typing.List[typing.Dict[str, typing.Any]], int]:
         arguments = user.USER_FILTER.parse_args()
         LOG.info('Received request to list users')
@@ -30,8 +32,15 @@ class Users(flask_restplus.Resource):
 
         return [u.to_dict() for u in users], 200
 
-    @api.doc(description='Creates a new user')
-    @api.marshal_with(USER_MODEL)
+    @api.doc(
+        description='Creates a new user',
+        responses={
+            '409': 'User already exist',
+            '500': 'Internal server error',
+        },
+    )
+    @api.expect(user.USER_CREATE_PARSER)
+    @api.marshal_with(USER_MODEL, code=201)
     def post(self) -> typing.Tuple[typing.Dict[str, typing.Any], int]:
         LOG.info('Received request to create a new user')
         arguments = user.USER_CREATE_PARSER.parse_args()
@@ -66,14 +75,26 @@ class User(flask_restplus.Resource):
             flask_restplus.abort(404, message='User does not exist')
         return single_user
 
-    @api.doc(description='Get single user by id')
-    @api.marshal_with(USER_MODEL)
+    @api.doc(
+        description='Get single user by id',
+        responses={
+            '404': 'User does not exist',
+        },
+    )
+    @api.marshal_with(USER_MODEL, 200)
     def get(self, user_id: str) -> typing.Tuple[typing.List[typing.Dict[str, typing.Any]], int]:
         LOG.info('Received request to get user by id')
         single_user = self._get_user(user_id)
         return single_user.to_dict(), 200
 
-    @api.doc(descritpion='Deletes user by id')
+    @api.doc(
+        descritpion='Deletes user by id',
+        responses={
+            '204': 'Deleted user',
+            '404': 'User does not exist',
+            '500': 'Failed to delete user',
+        },
+    )
     def delete(self, user_id: str) -> typing.Tuple[typing.Any, int]:
         LOG.info('Received request to delete user')
         single_user = self._get_user(user_id)
