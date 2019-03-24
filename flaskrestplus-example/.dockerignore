@@ -1,0 +1,12 @@
+.gitignore
+.dockerignore
+build/
+*egg-info/
+.venv/
+__pycache__
+.mypy_cache/
+Makefile
+Dockerfile
+*.md
+*.log
+.python-version

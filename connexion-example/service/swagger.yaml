@@ -1,0 +1,216 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Sample service
+  description: Example of connexion service
+servers:
+  - url: 'http://service'
+    description: Sample service
+paths:
+  /status:
+    get:
+      summary: Gets service status
+      operationId: service.api.status.get
+      description: Returns if service is UP
+      responses:
+        200:
+          description: Service is operational
+        503:
+          description: Service is unable to handle the request
+  /users:
+    get:
+      summary: Lists users
+      operationId: service.api.users.get
+      description: Lists all users in the system
+      parameters:
+        - $ref: '#/components/parameters/FilterUserLastName'
+      responses:
+        200:
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      summary: Creates new user
+      operationId: service.api.users.post
+      description: Creates new user in the system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUser'
+      responses:
+        201:
+          description: New user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        409:
+          $ref: '#/components/responses/Conflict'
+        500:
+          $ref: '#/components/responses/UnexpectedError'
+  /users/{user_id}:
+    get:
+      summary: Gets single user by id
+      operationId: service.api.user.get
+      description: Gets user by it id
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        200:
+          description: User
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/UnexpectedError'
+    delete:
+      summary: Deletes single user by id
+      operationId: service.api.user.delete
+      description: Deletes user by it id
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        204:
+          description: OK
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/UnexpectedError'
+components:
+  parameters:
+    FilterUserLastName:
+      name: lastName
+      in: query
+      required: False
+      description: User last name to filter by
+      schema:
+        type: string
+    UserId:
+      name: user_id
+      in: path
+      required: true
+      description: User id
+      schema:
+        type: string
+  schemas:
+    Error:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+    CreateUser:
+      type: object
+      required:
+        - userName
+        - email
+        - firstName
+        - lastName
+      properties:
+        userName:
+          type: string
+          description: User name
+          pattern: '^(?!-)[A-Za-z0-9-_]{1,25}(?<!-)$'
+          example: john_doe
+        email:
+          type: string
+          description: Email address
+          format: email
+          example: john.doe@example.com
+        firstName:
+          type: string
+          description: User first name
+          example: John
+        lastName:
+          type: string
+          description: User last name
+          example: Doe
+        address:
+          type: string
+          description: User address
+          example: Fake Street 99
+          nullable: true
+        postalCode:
+          type: string
+          nullable: true
+          description: Address postal code
+          pattern: '^[0-9]{2}-[0-9]{3}$'
+          example: 99-999
+    User:
+      type: object
+      required:
+        - id
+        - userName
+        - email
+        - firstName
+        - lastName
+      properties:
+        id:
+          type: string
+          description: User id
+          format: uuid
+        userName:
+          type: string
+          description: User name
+          pattern: '^(?!-)[A-Za-z0-9-_]{1,25}(?<!-)$'
+          example: john_doe
+        email:
+          type: string
+          description: Email address
+          format: email
+          example: john.doe@example.com
+        firstName:
+          type: string
+          description: User first name
+          example: John
+        lastName:
+          type: string
+          description: User last name
+          example: Doe
+        address:
+          type: string
+          nullable: true
+          description: User address
+          example: Fake Street 99
+        postalCode:
+          type: string
+          nullable: true
+          description: Address postal code
+          example: 99-999
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Object was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Conflict:
+      description: Object is in conflict state
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    UnexpectedError:
+      description: Service encountered an error it does not know how to handle
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
