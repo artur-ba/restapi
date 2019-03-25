@@ -25,6 +25,7 @@ USER_CREATE_PARSER.add_argument(
     required=True,
     type=inputs.regex('^(?!-)[A-Za-z0-9-_]{1,25}(?<!-)$'),
     help='User name is required',
+    location='json',
 )
 USER_CREATE_PARSER.add_argument(
     'firstName',
@@ -32,6 +33,7 @@ USER_CREATE_PARSER.add_argument(
     required=True,
     type=str,
     help='User first name is required',
+    location='json',
 )
 USER_CREATE_PARSER.add_argument(
     'lastName',
@@ -39,6 +41,7 @@ USER_CREATE_PARSER.add_argument(
     required=True,
     type=str,
     help='User last name is required',
+    location='json',
 )
 USER_CREATE_PARSER.add_argument(
     'email',
@@ -46,13 +49,20 @@ USER_CREATE_PARSER.add_argument(
     required=True,
     type=inputs.regex(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)'),
     help='User email is required',
+    location='json',
 )
-USER_CREATE_PARSER.add_argument('address', required=False, type=str)
+USER_CREATE_PARSER.add_argument(
+    'address',
+    required=False,
+    type=str,
+    location='json',
+)
 USER_CREATE_PARSER.add_argument(
     'postalCode',
     dest='postal_code',
     required=False,
     type=inputs.regex(r'^[\d]{2}-[\d]{3}$'),
+    location='json',
 )
 
 
